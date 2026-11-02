@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f6fa" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0c1019" media="(prefers-color-scheme: dark)" />
+  <meta name="description" content="适合三星浏览器的个人搜索与快捷入口主页" />
+  <title>我的主页</title>
+  <style>
+    :root { color-scheme: light dark; --bg:#f5f6fa; --surface:rgba(255,255,255,.79); --surface-solid:#fff; --text:#182236; --muted:#81889b; --border:rgba(29,43,70,.09); --shadow:0 18px 50px rgba(50,61,90,.07); --accent:#3478f6; --soft:#edf3ff; --hover:rgba(67,106,170,.055); }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0c1019; --surface:rgba(24,30,42,.76); --surface-solid:#171e2b; --text:#f3f6fc; --muted:#9ca5b6; --border:rgba(226,235,255,.10); --shadow:0 22px 62px rgba(0,0,0,.23); --accent:#80aaff; --soft:#25354e; --hover:rgba(160,190,255,.06); } }
+    * { box-sizing:border-box; }
+    html { min-height:100%; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"SamsungOne","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); min-height:100vh; min-height:100dvh; overflow-x:hidden; }
+    body::before,body::after { content:""; position:fixed; pointer-events:none; filter:blur(70px); z-index:-1; opacity:.58; border-radius:50%; }
+    body::before { background:radial-gradient(circle,#cbdcff 0%,transparent 69%); width:410px;height:410px;left:-170px;top:-100px; }
+    body::after { background:radial-gradient(circle,#dfd4ff 0%,transparent 66%); width:390px;height:390px;right:-190px;bottom:-120px; }
+    @media (prefers-color-scheme: dark) { body::before { opacity:.18; } body::after { opacity:.11; } }
+    button, input { font:inherit; }
+    button { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .wrap { max-width:610px; width:100%; margin:0 auto; padding:32px 22px max(40px,env(safe-area-inset-bottom)); }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { display:flex; align-items:center; gap:10px; font-size:13px; letter-spacing:.11em; font-weight:750; color:var(--muted); }
+    .brand-mark { width:28px; height:28px; border-radius:9px; background:var(--text);color:var(--bg); display:grid;place-items:center; font-size:15px;font-weight:800;letter-spacing:-.04em; }
+    .settings-btn { display:flex; align-items:center; gap:7px; background:var(--surface); color:var(--muted); border:1px solid var(--border); border-radius:99px; padding:9px 13px; font-size:12px; font-weight:650; }
+    .settings-btn svg { width:15px;height:15px; }
+    .hero { margin:75px 0 41px; }
+    .date { color:var(--muted); font-weight:550; font-size:14px; letter-spacing:.025em; }
+    .time { font-size:clamp(78px,19vw,118px); line-height:1.04; font-weight:550; letter-spacing:-.075em; font-variant-numeric:tabular-nums; margin:9px 0 7px -5px; }
+    .tagline { font-size:14px; color:var(--muted); margin:0; }
+    .search-card { padding:12px; background:var(--surface); border:1px solid var(--border); border-radius:25px; box-shadow:var(--shadow); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); }
+    .search-row { display:flex; align-items:center; gap:9px; padding:6px 7px 10px 12px; }
+    .mag { width:21px; height:21px; color:var(--muted); flex-shrink:0; }
+    #search { flex:1; min-width:0; font-size:17px; background:transparent; color:var(--text); border:0; outline:0; padding:10px 0; }
+    #search::placeholder { color:var(--muted); opacity:.85; }
+    .go { width:40px;height:40px;border-radius:14px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center; flex-shrink:0; }
+    .go svg { width:19px;height:19px; }
+    .engines { display:flex; border-top:1px solid var(--border); padding:10px 5px 0; gap:7px; }
+    .engine { border:0; color:var(--muted); background:transparent; border-radius:12px; padding:10px 16px; display:flex; align-items:center; gap:8px; font-size:13px; font-weight:650; }
+    .engine[aria-pressed="true"] { background:var(--soft); color:var(--accent); }
+    .engine-mark { width:17px;height:17px;display:grid;place-items:center; font-size:14px;font-weight:850; }
+    .shortcuts-head { display:flex; justify-content:space-between; align-items:center; margin:39px 2px 16px; }
+    .shortcuts-head h2 { margin:0; font-weight:700; font-size:17px; letter-spacing:-.025em; }
+    .shortcuts-head .sub { color:var(--muted); font-size:12px; }
+    .links { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .link { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height:114px; border:1px solid var(--border); border-radius:20px; padding:15px 5px 12px; background:var(--surface); color:var(--text); text-decoration:none; backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); transition:transform .14s,background .14s; min-width:0; -webkit-tap-highlight-color:transparent; }
+    .link:active { transform:scale(.96); background:var(--hover); }
+    .iconbox { width:44px; height:44px; border-radius:15px; display:grid;place-items:center; color:white; font-size:16px; font-weight:800; letter-spacing:-.06em; }
+    .link-label { font-size:12px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:95%; }
+    .pending .iconbox { background:var(--soft)!important;color:var(--accent)!important; }
+    .pending:after { content:"·"; position:absolute;top:8px;right:12px;color:var(--muted);font-size:18px;line-height:1; }
+    .footer { color:var(--muted); text-align:center; font-size:11px; margin-top:39px; opacity:.72; }
+    .overlay { position:fixed; inset:0; z-index:10; display:none; align-items:flex-end; justify-content:center; background:rgba(7,12,24,.48); padding:0; }
+    .overlay.open { display:flex; }
+    .panel { width:100%; max-width:610px; max-height:88vh;max-height:88dvh;overflow:auto; background:var(--surface-solid);border-radius:27px 27px 0 0; padding:24px 22px max(24px,env(safe-area-inset-bottom)); box-shadow:0 0 80px rgba(0,0,0,.22); }
+    .panel-top { display:flex; align-items:center; justify-content:space-between; }
+    .panel-top h2 { font-size:20px; margin:0; }
+    .close { width:34px;height:34px;border:0;border-radius:50%;background:var(--soft);color:var(--text);font-size:22px;line-height:1; }
+    .help { font-size:12px; color:var(--muted); line-height:1.7; margin:9px 0 18px; }
+    .entries { display:flex; flex-direction:column; gap:12px; }
+    .entry { padding:12px; background:var(--bg); border:1px solid var(--border); border-radius:15px; }
+    .entry-head { display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px; }
+    .entry-head strong { font-size:13px; }
+    .remove { border:0;background:none;color:#df687b;font-size:12px;padding:3px; }
+    .fields { display:grid;grid-template-columns:1fr;gap:8px; }
+    .field { display:flex; flex-direction:column;gap:5px; }
+    .field span { font-size:11px;color:var(--muted); }
+    .field input { width:100%; border:1px solid var(--border); outline:none; border-radius:10px; background:var(--surface-solid); color:var(--text); font-size:13px; padding:11px 12px; }
+    .field input:focus { border-color:var(--accent); }
+    .panel-actions { display:flex; gap:9px; margin-top:16px; }
+    .action { flex:1; padding:13px 9px; border-radius:13px; font-weight:700; font-size:13px; }
+    .add { background:var(--soft); color:var(--text); border:0; }
+    .save { background:var(--accent); color:white; border:0; }
+    .message { margin-top:10px;font-size:12px;color:#d65b67;min-height:15px; }
+    @media(min-width:700px) { .wrap {padding-top:45px;} .hero {margin-top:93px;} .overlay{align-items:center;padding:20px;} .panel {border-radius:25px;max-height:88vh;} }
+    @media(max-width:360px) { .wrap {padding-left:16px;padding-right:16px;} .links { gap:7px;} .link{min-height:101px;border-radius:16px;} .iconbox{width:39px;height:39px;} .engine{padding:10px 12px;} }
+    @media(prefers-reduced-motion:reduce) { .link {transition:none;} }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand"><span class="brand-mark">N</span><span>MY START PAGE</span></div>
+      <button class="settings-btn" type="button" id="open-settings" aria-label="编辑快捷入口">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.5"/></svg>
+        自定义
+      </button>
+    </header>
+    <section class="hero" aria-label="当前时间">
+      <div class="date" id="date">今天</div>
+      <div class="time" id="time">--:--</div>
+      <p class="tagline">把常用的网站，放在触手可及的地方。</p>
+    </section>
+    <form class="search-card" id="search-form" role="search">
+      <div class="search-row">
+        <svg class="mag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></svg>
+        <input type="search" id="search" aria-label="搜索关键词" placeholder="搜索任何想知道的事…" enterkeyhint="search" autocomplete="off" />
+        <button type="submit" class="go" aria-label="开始搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+      </div>
+      <div class="engines" role="group" aria-label="搜索引擎">
+        <button type="button" class="engine" data-engine="google" aria-pressed="true"><span class="engine-mark" style="color:#4285f4">G</span> Google</button>
+        <button type="button" class="engine" data-engine="bing" aria-pressed="false"><span class="engine-mark" style="color:#0aa69a">b</span> Bing</button>
+      </div>
+    </form>
+    <div class="shortcuts-head"><h2>常用网站</h2><span class="sub">点击直达</span></div>
+    <nav class="links" id="links" aria-label="常用网站快捷入口"></nav>
+    <footer class="footer">专属起始页 · 无广告 · 不收集搜索内容</footer>
+  </main>
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+    <section class="panel">
+      <div class="panel-top"><h2 id="panel-title">编辑快捷入口</h2><button class="close" id="close-settings" type="button" aria-label="关闭">×</button></div>
+      <p class="help">可以修改名称或网址。NAS 填写你自己在手机上能访问的地址；修改结果保存在当前浏览器中。建议优先使用 HTTPS。</p>
+      <div class="entries" id="entries"></div>
+      <div class="panel-actions"><button type="button" class="action add" id="add-link">＋ 添加网站</button><button type="button" class="action save" id="save-settings">保存修改</button></div>
+      <div class="message" id="message" role="status"></div>
+    </section>
+  </div>
+<script>
+(function() {
+  'use strict';
+  const storeKey = 'my_start_page_links_v1';
+  const engineKey = 'my_start_page_engine_v1';
+  const defaults = [
+    { name:'Google', url:'https://www.google.com/', icon:'G', color:'#4285F4' },
+    { name:'Bing', url:'https://www.bing.com/', icon:'b', color:'#087E89' },
+    { name:'哔哩哔哩', url:'https://www.bilibili.com/', icon:'bili', color:'#ED79A5' },
+    { name:'YouTube', url:'https://www.youtube.com/', icon:'▶', color:'#EF4145' },
+    { name:'馒头 PT', url:'https://pt.m-team.cc/', icon:'PT', color:'#7458CD' },
+    { name:'微信网页版', url:'https://wx.qq.com/', icon:'微', color:'#17B56B' },
+    { name:'我的 NAS', url:'', icon:'NAS', color:'#4893CE' },
+    { name:'GitHub', url:'https://github.com/', icon:'GH', color:'#30394D' }
+  ];
+  const $ = s => document.querySelector(s);
+  function stored(key) { try { return localStorage.getItem(key); } catch (_) { return null; } }
+  function persist(key, value) { try { localStorage.setItem(key,value); return true; } catch (_) { return false; } }
+  function validUrl(str) { try { let u = new URL(str); return (u.protocol==='https:'||u.protocol==='http:') && Boolean(u.hostname); } catch (_) { return false; } }
+  function loadLinks() {
+    try { const arr = JSON.parse(stored(storeKey)); if(Array.isArray(arr) && arr.length<=24 && arr.every(x=>x && typeof x.name==='string' && typeof x.url==='string')) return arr; } catch (_) {}
+    return defaults.map(x=>({...x}));
+  }
+  let links = loadLinks();
+  let engine = stored(engineKey)==='bing'?'bing':'google';
+  function updateClock() {
+    const d = new Date();
+    $('#time').textContent = d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});
+    $('#date').textContent = new Intl.DateTimeFormat('zh-CN',{month:'long',day:'numeric',weekday:'long'}).format(d);
+  }
+  updateClock(); setInterval(updateClock,15000);
+  function updateEngines() { document.querySelectorAll('.engine').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.engine===engine))); }
+  document.querySelectorAll('.engine').forEach(b=>b.addEventListener('click',()=>{engine=b.dataset.engine;persist(engineKey,engine);updateEngines();}));
+  updateEngines();
+  $('#search-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const q = $('#search').value.trim();
+    if(!q) {$('#search').focus();return;}
+    location.href=(engine==='bing'?'https://www.bing.com/search?q=':'https://www.google.com/search?q=')+encodeURIComponent(q);
+  });
+  const palette = ['#4285F4','#0B938D','#ED79A5','#F25B5B','#7458CD','#18A86D','#4893CE','#515B70'];
+  function renderLinks() {
+    const container = $('#links'); container.replaceChildren();
+    links.forEach((link,i)=>{
+      const a=document.createElement('a'); a.className='link'+(!validUrl(link.url)?' pending':'');
+      a.href=validUrl(link.url)?link.url:'#';
+      a.setAttribute('aria-label',validUrl(link.url)?'打开 '+link.name:'设置 '+link.name+' 的网址');
+      const icon=document.createElement('span');icon.className='iconbox';icon.style.background=link.color||palette[i%palette.length];
+      icon.textContent=link.icon||link.name.slice(0,2); if(icon.textContent.length>3) icon.style.fontSize='12px';
+      const text=document.createElement('span');text.className='link-label';text.textContent=link.name;
+      a.append(icon,text);
+      if(!validUrl(link.url)) a.addEventListener('click',ev=>{ev.preventDefault();openSettings(i);});
+      container.append(a);
+    });
+  }
+  renderLinks();
+  const overlay=$('#overlay'), entries=$('#entries'), msg=$('#message');
+  let draft=[];
+  function inputField(label,cls,value,placeholder) {
+    const wrap=document.createElement('label');wrap.className='field';
+    const span=document.createElement('span');span.textContent=label;
+    const input=document.createElement('input');input.className=cls;input.value=value||'';input.placeholder=placeholder||'';input.autocomplete='off';
+    wrap.append(span,input);return wrap;
+  }
+  function syncDraft() {
+    [...entries.children].forEach((el,i)=>{
+      if(draft[i]) {draft[i].name=el.querySelector('.edit-name').value.trim();draft[i].url=el.querySelector('.edit-url').value.trim();}
+    });
+  }
+  function renderEntries() {
+    entries.replaceChildren();
+    draft.forEach((link,i)=>{
+      const box=document.createElement('div');box.className='entry';
+      const head=document.createElement('div');head.className='entry-head';
+      const title=document.createElement('strong');title.textContent='网站 '+(i+1);
+      const remove=document.createElement('button');remove.type='button';remove.className='remove';remove.textContent='删除';
+      remove.addEventListener('click',()=>{syncDraft();draft.splice(i,1);renderEntries();});
+      const fields=document.createElement('div');fields.className='fields';
+      fields.append(inputField('名称','edit-name',link.name,'网站名称'),inputField('网址','edit-url',link.url,'https://example.com'));
+      head.append(title,remove);box.append(head,fields);entries.append(box);
+    });
+  }
+  function openSettings(focusIndex) {
+    draft=links.map(x=>({...x}));msg.textContent='';renderEntries();overlay.classList.add('open');
+    document.body.style.overflow='hidden';
+    if(Number.isInteger(focusIndex)) {const el=entries.children[focusIndex]?.querySelector('.edit-url');if(el){ el.scrollIntoView({block:'center'});el.focus(); }}
+  }
+  function closeSettings() {overlay.classList.remove('open');document.body.style.overflow='';}
+  $('#open-settings').addEventListener('click',()=>openSettings());
+  $('#close-settings').addEventListener('click',closeSettings);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeSettings();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))closeSettings();});
+  $('#add-link').addEventListener('click',()=>{
+    syncDraft();if(draft.length>=24){msg.textContent='最多添加 24 个快捷入口';return;}
+    draft.push({name:'',url:'',icon:'↗',color:'#687795'});renderEntries();entries.lastElementChild?.scrollIntoView({block:'center',behavior:'smooth'});entries.lastElementChild?.querySelector('.edit-name')?.focus();
+  });
+  $('#save-settings').addEventListener('click',()=>{
+    syncDraft();
+    if(draft.some(x=>!x.name)){msg.textContent='请填写每个快捷入口的名称';return;}
+    if(draft.some(x=>x.url && !validUrl(x.url))){msg.textContent='网址应以 http:// 或 https:// 开头';return;}
+    if(draft.some(x=>x.name.length>24||x.url.length>2048)){msg.textContent='名称或网址过长';return;}
+    links=draft.map((x,i)=>({...x,icon:x.icon||x.name.slice(0,2),color:x.color||palette[i%palette.length]}));
+    const saved=persist(storeKey,JSON.stringify(links));renderLinks();
+    if(!saved){msg.textContent='浏览器不允许保存本地设置。请检查是否在隐私模式中打开。';return;}
+    closeSettings();
+  });
+})();
+</script>
+</body>
+</html>
